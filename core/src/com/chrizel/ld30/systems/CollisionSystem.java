@@ -40,15 +40,18 @@ public class CollisionSystem extends EntitySystem {
 
             position1 = pm.get(e1);
             collider1 = cm.get(e1);
-            movement1 = mm.get(e1);
+            movement1 = mm.getSafe(e1);
 
             float velX = movement1 == null ? 0 : movement1.velocityX * Gdx.graphics.getDeltaTime();
             float velY = movement1 == null ? 0 : movement1.velocityY * Gdx.graphics.getDeltaTime();
 
-            v1.set(position1.x + velX, position1.y + velY);
-            v2.set(position1.x + velX + collider1.width, position1.y + velY);
-            v3.set(position1.x + velX + collider1.width, position1.y + velY + collider1.height);
-            v4.set(position1.x + velX, position1.y + velY + collider1.height);
+            float padX = (16f - collider1.width) / 2;
+            float padY = (16f - collider1.height) / 2;
+
+            v1.set(position1.x + padX + velX, position1.y + padY + velY);
+            v2.set(position1.x + padX + velX + collider1.width, position1.y + padY + velY);
+            v3.set(position1.x + padX + velX + collider1.width, position1.y + padY + velY + collider1.height);
+            v4.set(position1.x + padX + velX, position1.y + padY + velY + collider1.height);
 
             for (int j = 0; j < entities.size(); ++j) {
                 if (i == j) {
@@ -60,12 +63,15 @@ public class CollisionSystem extends EntitySystem {
                 position2 = pm.get(e2);
                 collider2 = cm.get(e2);
 
+                padX = (16f - collider2.width);
+                padY = (16f - collider2.height);
+
                 // Do the two colliders collide?
                 boolean collide =
-                    (v1.x >= position2.x && v1.x <= position2.x + collider2.width && v1.y >= position2.y && v1.y <= position2.y + collider2.height) ||
-                    (v2.x >= position2.x && v2.x <= position2.x + collider2.width && v2.y >= position2.y && v2.y <= position2.y + collider2.height) ||
-                    (v3.x >= position2.x && v3.x <= position2.x + collider2.width && v3.y >= position2.y && v3.y <= position2.y + collider2.height) ||
-                    (v4.x >= position2.x && v4.x <= position2.x + collider2.width && v4.y >= position2.y && v4.y <= position2.y + collider2.height);
+                    (v1.x >= position2.x + padX && v1.x <= position2.x + padX + collider2.width && v1.y >= position2.y + padY && v1.y <= position2.y + padY + collider2.height) ||
+                    (v2.x >= position2.x + padX && v2.x <= position2.x + padX + collider2.width && v2.y >= position2.y + padY && v2.y <= position2.y + padY + collider2.height) ||
+                    (v3.x >= position2.x + padX && v3.x <= position2.x + padX + collider2.width && v3.y >= position2.y + padY && v3.y <= position2.y + padY + collider2.height) ||
+                    (v4.x >= position2.x + padX && v4.x <= position2.x + padX + collider2.width && v4.y >= position2.y + padY && v4.y <= position2.y + padY + collider2.height);
 
                 if (collide) {
                     if (movement1 != null) {

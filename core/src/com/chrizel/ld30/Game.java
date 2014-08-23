@@ -20,12 +20,12 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create () {
         OrthographicCamera camera = new OrthographicCamera(640, 480);
-        camera.position.set(0, 0, 0);
+        camera.position.set(160, 120, 0);
         camera.zoom = 0.5f;
         camera.update();
 
         heroTexture = new Texture("hero.png");
-        mapSystem = new MapSystem("tiles.png", "map1.png");
+        mapSystem = new MapSystem(camera, "tiles.png", "map1.png");
 
         world = new World();
         world.setSystem(new PlayerInputSystem());
@@ -39,12 +39,12 @@ public class Game extends ApplicationAdapter {
 
         Entity player = new EntityBuilder(world)
                 .with(
-                        new PositionComponent(0, 0),
-                        new PlayerComponent(100.0f),
+                        new PositionComponent(152f, 112f),
+                        new PlayerComponent(120.0f),
                         new FacingComponent(FacingComponent.DOWN),
                         new MovementComponent(),
                         new AttackComponent("swing"),
-                        new ColliderComponent(16f, 16f),
+                        new ColliderComponent(8f, 8f),
                         new AnimationComponent()
                                 .newAnimation("idle", heroTexture, 1, true, 16, 16, new int[]{0})
                                 .newAnimation("walk", heroTexture, 0.1f, true, 16, 16, new int[]{0, 1, 2, 3})
@@ -53,7 +53,7 @@ public class Game extends ApplicationAdapter {
                 )
                 .build();
 
-        mapSystem.loadScreen(0, 0);
+        mapSystem.loadScreen();
 	}
 
     @Override
