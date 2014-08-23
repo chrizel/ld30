@@ -33,14 +33,19 @@ public class PlayerInputSystem extends IteratingSystem {
         AttackComponent attack = attackMapper.get(entity);
 
         boolean walk = false;
+        boolean shift = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             movement.velocityX = player.speed;
-            facing.facing = FacingComponent.RIGHT;
+            if (!shift) {
+                facing.facing = FacingComponent.RIGHT;
+            }
             walk = true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             movement.velocityX = player.speed * -1;
-            facing.facing = FacingComponent.LEFT;
+            if (!shift) {
+                facing.facing = FacingComponent.LEFT;
+            }
             walk = true;
         } else {
             movement.velocityX = 0;
@@ -48,11 +53,15 @@ public class PlayerInputSystem extends IteratingSystem {
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             movement.velocityY = player.speed;
-            facing.facing = FacingComponent.UP;
+            if (!shift) {
+                facing.facing = FacingComponent.UP;
+            }
             walk = true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             movement.velocityY = player.speed * -1;
-            facing.facing = FacingComponent.DOWN;
+            if (!shift) {
+                facing.facing = FacingComponent.DOWN;
+            }
             walk = true;
         } else {
             movement.velocityY = 0;

@@ -51,6 +51,10 @@ public class Game extends ApplicationAdapter {
 
         engine.addEntity(player);
 
+        Entity map = engine.createEntity();
+        map.add(new MapComponent("map1.png"));
+        engine.addEntity(map);
+/*
         Entity wall = engine.createEntity();
         wall.add(new PositionComponent(50.0f, 50.0f));
         wall.add(new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)));
@@ -63,7 +67,7 @@ public class Game extends ApplicationAdapter {
         wall2.add(new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)));
         wall2.add(new ColliderComponent(16.0f, 16.0f));
         engine.addEntity(wall2);
-
+*/
         //Gdx.input.setInputProcessor(stage);
 	}
 
