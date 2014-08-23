@@ -16,8 +16,8 @@ public class RenderSystem extends EntitySystem {
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<DrawableComponent> dm = ComponentMapper.getFor(DrawableComponent.class);
 
-    public RenderSystem(OrthographicCamera camera) {
-        super(75);
+    public RenderSystem(OrthographicCamera camera, int priority) {
+        super(priority);
         batch = new SpriteBatch();
         this.camera = camera;
     }

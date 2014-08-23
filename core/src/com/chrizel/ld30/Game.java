@@ -13,6 +13,7 @@ import com.chrizel.ld30.systems.*;
 
 public class Game extends ApplicationAdapter {
     private Texture heroTexture;
+    private Texture tilesTexture;
     private PooledEngine engine;
 	
 	@Override
@@ -23,20 +24,24 @@ public class Game extends ApplicationAdapter {
         camera.update();
 
         heroTexture = new Texture("hero.png");
+        tilesTexture = new Texture("tiles.png");
 
         engine = new PooledEngine();
-        engine.addSystem(new MovementSystem());
-        engine.addSystem(new AttackSystem());
-        engine.addSystem(new PlayerInputSystem());
-        engine.addSystem(new RenderSystem(camera));
-        engine.addSystem(new AnimationSystem(camera));
+        engine.addSystem(new PlayerInputSystem(50));
+        engine.addSystem(new CollisionSystem(60));
+        engine.addSystem(new MovementSystem(75));
+        engine.addSystem(new AttackSystem(75));
+        engine.addSystem(new RenderSystem(camera, 100));
+        engine.addSystem(new AnimationSystem(camera, 100));
+
 
         Entity player = engine.createEntity();
         player.add(new PositionComponent(0, 0));
-        player.add(new PlayerComponent());
+        player.add(new PlayerComponent(100.0f));
         player.add(new FacingComponent(FacingComponent.DOWN));
         player.add(new MovementComponent());
         player.add(new AttackComponent("swing"));
+        player.add(new ColliderComponent(16f, 16f));
         player.add(new AnimationComponent()
                         .newAnimation("idle", heroTexture, 1, true, 16, 16, new int[]{0})
                         .newAnimation("walk", heroTexture, 0.1f, true, 16, 16, new int[]{0, 1, 2, 3})
@@ -45,6 +50,19 @@ public class Game extends ApplicationAdapter {
         );
 
         engine.addEntity(player);
+
+        Entity wall = engine.createEntity();
+        wall.add(new PositionComponent(50.0f, 50.0f));
+        wall.add(new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)));
+        wall.add(new ColliderComponent(16.0f, 16.0f));
+        engine.addEntity(wall);
+
+
+        Entity wall2 = engine.createEntity();
+        wall2.add(new PositionComponent(-50.0f, -50.0f));
+        wall2.add(new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)));
+        wall2.add(new ColliderComponent(16.0f, 16.0f));
+        engine.addEntity(wall2);
 
         //Gdx.input.setInputProcessor(stage);
 	}
@@ -56,6 +74,7 @@ public class Game extends ApplicationAdapter {
     @Override
     public void dispose() {
         heroTexture.dispose();
+        tilesTexture.dispose();
     }
 
     @Override

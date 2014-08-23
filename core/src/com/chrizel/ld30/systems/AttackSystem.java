@@ -11,8 +11,8 @@ public class AttackSystem extends IteratingSystem {
     ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
     ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
 
-    public AttackSystem() {
-        super(Family.getFor(AttackComponent.class), 100);
+    public AttackSystem(int priority) {
+        super(Family.getFor(AttackComponent.class), priority);
     }
 
     @Override

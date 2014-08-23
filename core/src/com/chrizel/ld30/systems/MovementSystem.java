@@ -12,8 +12,8 @@ public class MovementSystem extends IteratingSystem {
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<MovementComponent> mm = ComponentMapper.getFor(MovementComponent.class);
 
-    public MovementSystem() {
-        super(Family.getFor(PositionComponent.class, MovementComponent.class), 50);
+    public MovementSystem(int priority) {
+        super(Family.getFor(PositionComponent.class, MovementComponent.class), priority);
     }
 
     @Override

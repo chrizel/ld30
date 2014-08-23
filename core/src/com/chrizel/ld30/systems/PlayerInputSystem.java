@@ -15,8 +15,13 @@ public class PlayerInputSystem extends IteratingSystem {
     ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
     ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
 
-    public PlayerInputSystem() {
-        super(Family.getFor(MovementComponent.class, PlayerComponent.class, FacingComponent.class, AnimationComponent.class, AttackComponent.class), 25);
+    public PlayerInputSystem(int priority) {
+        super(Family.getFor(
+                MovementComponent.class,
+                PlayerComponent.class,
+                FacingComponent.class,
+                AnimationComponent.class,
+                AttackComponent.class), priority);
     }
 
     @Override

@@ -21,8 +21,8 @@ public class AnimationSystem extends EntitySystem {
     private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
     private ComponentMapper<FacingComponent> fm = ComponentMapper.getFor(FacingComponent.class);
 
-    public AnimationSystem(OrthographicCamera camera) {
-        super(75);
+    public AnimationSystem(OrthographicCamera camera, int priority) {
+        super(priority);
         batch = new SpriteBatch();
         this.camera = camera;
     }
