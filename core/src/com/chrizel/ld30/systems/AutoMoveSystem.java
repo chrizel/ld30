@@ -6,9 +6,7 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
-import com.chrizel.ld30.components.AutoMoveComponent;
-import com.chrizel.ld30.components.MovementComponent;
-import com.chrizel.ld30.components.PositionComponent;
+import com.chrizel.ld30.components.*;
 
 import java.util.Random;
 
@@ -17,6 +15,7 @@ public class AutoMoveSystem extends EntityProcessingSystem {
     ComponentMapper<AutoMoveComponent> amm;
     ComponentMapper<PositionComponent> pm;
     ComponentMapper<MovementComponent> mm;
+    ComponentMapper<AttackComponent> am;
     Random random = new Random();
 
     public AutoMoveSystem() {
@@ -40,6 +39,11 @@ public class AutoMoveSystem extends EntityProcessingSystem {
             float diffY = position.y - amc.nextY;
             movement.velocityX = diffX == 0 ? 0 : (diffX > 0 ? 16 : -16);
             movement.velocityY = diffY == 0 ? 0 : (diffY > 0 ? 16 : -16);
+
+            AttackComponent attack = am.getSafe(e);
+            if (attack != null) {
+                attack.isAttacking = true;
+            }
 
             amc.inProgress = true;
         }

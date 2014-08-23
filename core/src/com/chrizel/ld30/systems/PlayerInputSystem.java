@@ -37,13 +37,13 @@ public class PlayerInputSystem extends EntityProcessingSystem {
         boolean walk = false;
         boolean shift = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             movement.velocityX = 16f;
             if (!shift) {
                 facing.facing = FacingComponent.RIGHT;
             }
             walk = true;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             movement.velocityX = 16f * -1;
             if (!shift) {
                 facing.facing = FacingComponent.LEFT;
@@ -53,13 +53,13 @@ public class PlayerInputSystem extends EntityProcessingSystem {
             movement.velocityX = 0;
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             movement.velocityY = 16f;
             if (!shift) {
                 facing.facing = FacingComponent.UP;
             }
             walk = true;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             movement.velocityY = 16f * -1;
             if (!shift) {
                 facing.facing = FacingComponent.DOWN;

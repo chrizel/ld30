@@ -24,7 +24,7 @@ public class AttackAnimationSystem extends EntityProcessingSystem {
 
         if (attack.isAttacking) {
             if (animation.currentAnimation == attack.animation &&
-                    animation.getStateTime() >= animation.getAnimation().getAnimationDuration())
+                animation.getStateTime() >= attack.duration)
             {
                 animation.setStateTime(0);
                 attack.isAttacking = false;

@@ -62,14 +62,14 @@ public class MapSystem extends EntityProcessingSystem {
                     new EntityBuilder(world)
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new AttackComponent("attack", 10f, 16f, 16f),
+                                    new AttackComponent("attack", 1f, 40f, 16f, 16f),
                                     new HealthComponent(100f),
                                     new AutoMoveComponent(0, 16f * 3, 2f),
                                     new MovementComponent(5f),
                                     new AnimationComponent()
                                             .newAnimation("idle", enemy1, 0.25f, true, 16, 16, new int[]{0, 1})
                                             .newAnimation("hit", enemy1, 0.1f, true, 16, 16, new int[]{2, 3})
-                                            .newAnimation("attack", enemy1, 0.1f, false, 16, 16, new int[]{4, 5})
+                                            .newAnimation("attack", enemy1, 0.1f, true, 16, 16, new int[]{4, 5})
                                             .setAnimation("idle"),
                                     new CorpseComponent(new TextureRegion(enemy1, 96, 0, 16, 16)),
                                     new ColliderComponent(8f, 8f)
