@@ -60,7 +60,7 @@ public class AnimationSystem extends EntitySystem {
                 float x = positionComponent.x;
                 float y = positionComponent.y;
 
-                FacingComponent facing = fm.get(e);
+                FacingComponent facing = fm.getSafe(e);
                 if (facing != null) {
                     rotation = facing.getRotation();
                 }

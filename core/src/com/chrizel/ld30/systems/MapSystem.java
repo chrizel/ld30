@@ -3,19 +3,19 @@ package com.chrizel.ld30.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.World;
 import com.artemis.annotations.Wire;
+import com.artemis.managers.GroupManager;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.EntityBuilder;
+import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.chrizel.ld30.components.ColliderComponent;
-import com.chrizel.ld30.components.DrawableComponent;
-import com.chrizel.ld30.components.PlayerComponent;
-import com.chrizel.ld30.components.PositionComponent;
+import com.chrizel.ld30.components.*;
 
 import java.util.ArrayList;
 
@@ -25,6 +25,7 @@ public class MapSystem extends EntityProcessingSystem {
 
     private Texture tilesTexture;
     private Pixmap pixmap;
+    private Texture enemy1;
 
     private int screenX = 0;
     private int screenY = 0;
@@ -34,32 +35,47 @@ public class MapSystem extends EntityProcessingSystem {
     private final int screenHeight = 15;
     private OrthographicCamera camera;
 
-    private ArrayList<Entity> screenEntities;
-
     public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName) {
         super(Aspect.getAspectForAll(PlayerComponent.class, PositionComponent.class));
         this.camera = camera;
         this.tilesTexture = new Texture(Gdx.files.internal(tilesTexture));
         this.pixmap = new Pixmap(Gdx.files.internal(mapName));
-
-        screenEntities = new ArrayList<Entity>(100);
+        this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
     }
 
     public void loadScreen() {
-        System.out.println("loadScreen " + screenX + "/" + screenY);
+        //System.out.println("loadScreen " + screenX + "/" + screenY);
         for (int y = Math.abs(screenY * screenHeight); y < Math.abs(screenY * screenHeight) + screenHeight; y++) {
             for (int x = screenX * screenWidth; x < (screenX * screenWidth) + screenWidth; x++) {
                 int pixel = pixmap.getPixel(x, y);
 
                 if (pixel == Color.rgba8888(0f, 0f, 0f, 1f)) {
-                    screenEntities.add(
-                            new EntityBuilder(world)
-                                    .with(
-                                            new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                            new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
-                                            new ColliderComponent(16.0f, 16.0f)
-                                    )
-                                    .build());
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
+                                    new ColliderComponent(16.0f, 16.0f)
+                            )
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == Color.rgba8888(1f, 0f, 0f, 1f)) {
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new AttackComponent("attack", 10f, 16f, 16f),
+                                    new HealthComponent(100f),
+                                    new AutoMoveComponent(0, 16f * 3, 2f),
+                                    new MovementComponent(5f),
+                                    new AnimationComponent()
+                                            .newAnimation("idle", enemy1, 0.25f, true, 16, 16, new int[]{0, 1})
+                                            .newAnimation("hit", enemy1, 0.1f, true, 16, 16, new int[]{2, 3})
+                                            .newAnimation("attack", enemy1, 0.1f, false, 16, 16, new int[]{4, 5})
+                                            .setAnimation("idle"),
+                                    new CorpseComponent(new TextureRegion(enemy1, 96, 0, 16, 16)),
+                                    new ColliderComponent(8f, 8f)
+                            )
+                            .group("mapObject")
+                            .build();
                 }
             }
         }
@@ -70,6 +86,7 @@ public class MapSystem extends EntityProcessingSystem {
         super.dispose();
         pixmap.dispose();
         tilesTexture.dispose();
+        enemy1.dispose();
     }
 
     @Override
@@ -87,25 +104,25 @@ public class MapSystem extends EntityProcessingSystem {
             boolean load = false;
 
             // Is the player out of screen?
-            if (position.x > x + screenWidth * 16) {
+            if (position.x + 8f > x + screenWidth * 16) {
                 screenX += 1;
                 load = true;
-            } else if (position.x < x) {
+            } else if (position.x + 8f < x) {
                 screenX -= 1;
                 load = true;
-            } else if (position.y > y + screenHeight * 16) {
+            } else if (position.y + 8f > y + screenHeight * 16) {
                 screenY += 1;
                 load = true;
-            } else if (position.y < y) {
+            } else if (position.y + 8f < y) {
                 screenY -= 1;
                 load = true;
             }
 
             if (load) {
-                for (Entity entity : screenEntities) {
+                ImmutableBag<Entity> mapObjects = world.getManager(GroupManager.class).getEntities("mapObject");
+                for (Entity entity : mapObjects) {
                     entity.deleteFromWorld();
                 }
-                screenEntities.clear();
 
                 loadScreen();
             }

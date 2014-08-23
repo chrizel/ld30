@@ -38,13 +38,13 @@ public class PlayerInputSystem extends EntityProcessingSystem {
         boolean shift = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            movement.velocityX = player.speed;
+            movement.velocityX = 16f;
             if (!shift) {
                 facing.facing = FacingComponent.RIGHT;
             }
             walk = true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            movement.velocityX = player.speed * -1;
+            movement.velocityX = 16f * -1;
             if (!shift) {
                 facing.facing = FacingComponent.LEFT;
             }
@@ -54,13 +54,13 @@ public class PlayerInputSystem extends EntityProcessingSystem {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            movement.velocityY = player.speed;
+            movement.velocityY = 16f;
             if (!shift) {
                 facing.facing = FacingComponent.UP;
             }
             walk = true;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            movement.velocityY = player.speed * -1;
+            movement.velocityY = 16f * -1;
             if (!shift) {
                 facing.facing = FacingComponent.DOWN;
             }

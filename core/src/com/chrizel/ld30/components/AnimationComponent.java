@@ -62,6 +62,10 @@ public class AnimationComponent extends Component {
         }
     }
 
+    public boolean hasAnimation(String name) {
+        return animations.containsKey(name);
+    }
+
     public AnimationComponent setAnimation(String name) {
         this.currentAnimation = name;
         return this;

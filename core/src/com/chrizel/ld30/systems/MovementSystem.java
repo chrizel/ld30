@@ -24,7 +24,7 @@ public class MovementSystem extends EntityProcessingSystem {
         PositionComponent position = pm.get(e);
         MovementComponent movement = mm.get(e);
 
-        position.x += movement.velocityX * Gdx.graphics.getDeltaTime();
-        position.y += movement.velocityY * Gdx.graphics.getDeltaTime();
+        position.x += movement.velocityX * movement.speed * Gdx.graphics.getDeltaTime();
+        position.y += movement.velocityY * movement.speed * Gdx.graphics.getDeltaTime();
     }
 }

@@ -9,11 +9,11 @@ import com.chrizel.ld30.components.AnimationComponent;
 import com.chrizel.ld30.components.AttackComponent;
 
 @Wire
-public class AttackSystem extends EntityProcessingSystem {
+public class AttackAnimationSystem extends EntityProcessingSystem {
     ComponentMapper<AttackComponent> attackMapper;
     ComponentMapper<AnimationComponent> animationMapper;
 
-    public AttackSystem() {
+    public AttackAnimationSystem() {
         super(Aspect.getAspectForAll(AttackComponent.class));
     }
 
