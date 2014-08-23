@@ -49,7 +49,8 @@ project(":html") {
         compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
         compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        compile "com.badlogicgames.ashley:ashley:1.1.0:sources"
+        compile "net.onedaybeard.artemis:artemis-odb-gwt:0.6.5"
+        compile "net.onedaybeard.artemis:artemis-odb-gwt:0.6.5:sources"
     }
 }
 
@@ -59,7 +60,7 @@ project(":core") {
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.ashley:ashley:1.1.0"
+        compile "net.onedaybeard.artemis:artemis-odb:0.6.5:sources"
     }
 }
 

@@ -1,7 +1,12 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.*;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.EntitySystem;
+import com.artemis.annotations.Wire;
+import com.artemis.utils.Bag;
+import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,18 +16,17 @@ import com.chrizel.ld30.components.AnimationComponent;
 import com.chrizel.ld30.components.FacingComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
+@Wire
 public class AnimationSystem extends EntitySystem {
-    private ImmutableArray<Entity> entities;
-
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
-    private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
-    private ComponentMapper<FacingComponent> fm = ComponentMapper.getFor(FacingComponent.class);
+    private ComponentMapper<PositionComponent> pm;
+    private ComponentMapper<AnimationComponent> am;
+    private ComponentMapper<FacingComponent> fm;
 
-    public AnimationSystem(OrthographicCamera camera, int priority) {
-        super(priority);
+    public AnimationSystem(OrthographicCamera camera) {
+        super(Aspect.getAspectForAll(PositionComponent.class, AnimationComponent.class));
         batch = new SpriteBatch();
         this.camera = camera;
     }
@@ -32,16 +36,7 @@ public class AnimationSystem extends EntitySystem {
     }
 
     @Override
-    public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(Family.getFor(PositionComponent.class, AnimationComponent.class));
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-    }
-
-    @Override
-    public void update(float deltaTime) {
+    protected final void processEntities(ImmutableBag<Entity> entities) {
         PositionComponent positionComponent;
         AnimationComponent animationComponent;
 
@@ -50,7 +45,7 @@ public class AnimationSystem extends EntitySystem {
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
 
-        for (int i = 0; i < entities.size(); ++i) {
+        for (int i = 0, s = entities.size(); s > i; i++) {
             Entity e = entities.get(i);
 
             positionComponent = pm.get(e);
@@ -59,7 +54,7 @@ public class AnimationSystem extends EntitySystem {
             Animation animation = animationComponent.getAnimation();
 
             if (animation != null) {
-                animationComponent.setStateTime(animationComponent.getStateTime() + deltaTime);
+                animationComponent.setStateTime(animationComponent.getStateTime() + Gdx.graphics.getDeltaTime());
                 TextureRegion region = animation.getKeyFrame(animationComponent.getStateTime(), animationComponent.isLooping());
                 float rotation = 0.0f;
                 float x = positionComponent.x;
@@ -75,5 +70,10 @@ public class AnimationSystem extends EntitySystem {
         }
 
         batch.end();
+    }
+
+    @Override
+    protected boolean checkProcessing() {
+        return true;
     }
 }

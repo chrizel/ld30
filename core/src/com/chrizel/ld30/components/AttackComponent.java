@@ -1,6 +1,6 @@
 package com.chrizel.ld30.components;
 
-import com.badlogic.ashley.core.Component;
+import com.artemis.Component;
 
 public class AttackComponent extends Component {
     public String animation;

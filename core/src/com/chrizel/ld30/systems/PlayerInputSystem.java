@@ -1,36 +1,38 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.annotations.Wire;
+import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.chrizel.ld30.components.*;
 
-public class PlayerInputSystem extends IteratingSystem {
-    ComponentMapper<MovementComponent> mm = ComponentMapper.getFor(MovementComponent.class);
-    ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
-    ComponentMapper<FacingComponent> fm = ComponentMapper.getFor(FacingComponent.class);
-    ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
-    ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
+@Wire
+public class PlayerInputSystem extends EntityProcessingSystem {
+    ComponentMapper<MovementComponent> mm;
+    ComponentMapper<PlayerComponent> pm;
+    ComponentMapper<FacingComponent> fm;
+    ComponentMapper<AnimationComponent> am;
+    ComponentMapper<AttackComponent> attackMapper;
 
-    public PlayerInputSystem(int priority) {
-        super(Family.getFor(
+    public PlayerInputSystem() {
+        super(Aspect.getAspectForAll(
                 MovementComponent.class,
                 PlayerComponent.class,
                 FacingComponent.class,
                 AnimationComponent.class,
-                AttackComponent.class), priority);
+                AttackComponent.class));
     }
 
     @Override
-    public void processEntity(Entity entity, float deltaTime) {
-        MovementComponent movement = mm.get(entity);
-        PlayerComponent player = pm.get(entity);
-        FacingComponent facing = fm.get(entity);
-        AnimationComponent animation = am.get(entity);
-        AttackComponent attack = attackMapper.get(entity);
+    protected void process(Entity e) {
+        MovementComponent movement = mm.get(e);
+        PlayerComponent player = pm.get(e);
+        FacingComponent facing = fm.get(e);
+        AnimationComponent animation = am.get(e);
+        AttackComponent attack = attackMapper.get(e);
 
         boolean walk = false;
         boolean shift = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);

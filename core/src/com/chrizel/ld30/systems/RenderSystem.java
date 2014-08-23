@@ -1,42 +1,33 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.*;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.EntitySystem;
+import com.artemis.annotations.Wire;
+import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Disposable;
 import com.chrizel.ld30.components.DrawableComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
-public class RenderSystem extends EntitySystem {
-    private ImmutableArray<Entity> entities;
-
+@Wire
+public class RenderSystem extends EntitySystem implements Disposable {
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
-    private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<DrawableComponent> dm = ComponentMapper.getFor(DrawableComponent.class);
+    private ComponentMapper<PositionComponent> pm;
+    private ComponentMapper<DrawableComponent> dm;
 
-    public RenderSystem(OrthographicCamera camera, int priority) {
-        super(priority);
+    public RenderSystem(OrthographicCamera camera) {
+        super(Aspect.getAspectForAll(PositionComponent.class, DrawableComponent.class));
         batch = new SpriteBatch();
         this.camera = camera;
     }
 
-    public void dispose() {
-        batch.dispose();
-    }
-
     @Override
-    public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(Family.getFor(PositionComponent.class, DrawableComponent.class));
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-    }
-
-    @Override
-    public void update(float deltaTime) {
+    protected void processEntities(ImmutableBag<Entity> entities) {
         PositionComponent positionComponent;
         DrawableComponent drawableComponent;
 
@@ -55,5 +46,14 @@ public class RenderSystem extends EntitySystem {
         }
 
         batch.end();
+    }
+
+    @Override
+    protected boolean checkProcessing() {
+        return true;
+    }
+
+    public void dispose() {
+        batch.dispose();
     }
 }

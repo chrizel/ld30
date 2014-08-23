@@ -1,40 +1,36 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.*;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.EntitySystem;
+import com.artemis.annotations.Wire;
+import com.artemis.utils.ImmutableBag;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.chrizel.ld30.components.ColliderComponent;
-import com.chrizel.ld30.components.DrawableComponent;
 import com.chrizel.ld30.components.MovementComponent;
 import com.chrizel.ld30.components.PositionComponent;
+import com.sun.xml.internal.ws.api.pipe.Engine;
 
+@Wire
 public class CollisionSystem extends EntitySystem {
 
-    ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
-    ComponentMapper<ColliderComponent> cm = ComponentMapper.getFor(ColliderComponent.class);
-    ComponentMapper<MovementComponent> mm = ComponentMapper.getFor(MovementComponent.class);
-    private ImmutableArray<Entity> entities;
+    ComponentMapper<PositionComponent> pm;
+    ComponentMapper<ColliderComponent> cm;
+    ComponentMapper<MovementComponent> mm;
 
     private Vector2 v1 = new Vector2();
     private Vector2 v2 = new Vector2();
     private Vector2 v3 = new Vector2();
     private Vector2 v4 = new Vector2();
 
-    public CollisionSystem(int priority) {
-        super(priority);
+    public CollisionSystem() {
+        super(Aspect.getAspectForAll(PositionComponent.class, ColliderComponent.class));
     }
 
     @Override
-    public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(Family.getFor(PositionComponent.class, ColliderComponent.class));
-    }
-
-    @Override
-    public void removedFromEngine(Engine engine) {
-    }
-
-    @Override
-    public void update(float deltaTime) {
+    protected void processEntities(ImmutableBag<Entity> entities) {
         PositionComponent position1, position2;
         ColliderComponent collider1, collider2;
         MovementComponent movement1;
@@ -46,8 +42,8 @@ public class CollisionSystem extends EntitySystem {
             collider1 = cm.get(e1);
             movement1 = mm.get(e1);
 
-            float velX = movement1 == null ? 0 : movement1.velocityX * deltaTime;
-            float velY = movement1 == null ? 0 : movement1.velocityY * deltaTime;
+            float velX = movement1 == null ? 0 : movement1.velocityX * Gdx.graphics.getDeltaTime();
+            float velY = movement1 == null ? 0 : movement1.velocityY * Gdx.graphics.getDeltaTime();
 
             v1.set(position1.x + velX, position1.y + velY);
             v2.set(position1.x + velX + collider1.width, position1.y + velY);
@@ -79,5 +75,10 @@ public class CollisionSystem extends EntitySystem {
                 }
             }
         }
+    }
+
+    @Override
+    protected boolean checkProcessing() {
+        return true;
     }
 }

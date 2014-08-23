@@ -1,28 +1,30 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.annotations.Wire;
+import com.artemis.systems.EntityProcessingSystem;
 import com.chrizel.ld30.components.AnimationComponent;
 import com.chrizel.ld30.components.AttackComponent;
 
-public class AttackSystem extends IteratingSystem {
-    ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
-    ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
+@Wire
+public class AttackSystem extends EntityProcessingSystem {
+    ComponentMapper<AttackComponent> attackMapper;
+    ComponentMapper<AnimationComponent> animationMapper;
 
-    public AttackSystem(int priority) {
-        super(Family.getFor(AttackComponent.class), priority);
+    public AttackSystem() {
+        super(Aspect.getAspectForAll(AttackComponent.class));
     }
 
     @Override
-    public void processEntity(Entity entity, float deltaTime) {
-        AttackComponent attack = attackMapper.get(entity);
-        AnimationComponent animation = animationMapper.get(entity);
+    protected void process(Entity e) {
+        AttackComponent attack = attackMapper.get(e);
+        AnimationComponent animation = animationMapper.get(e);
 
         if (attack.isAttacking) {
             if (animation.currentAnimation == attack.animation &&
-                animation.getStateTime() >= animation.getAnimation().getAnimationDuration())
+                    animation.getStateTime() >= animation.getAnimation().getAnimationDuration())
             {
                 animation.setStateTime(0);
                 attack.isAttacking = false;

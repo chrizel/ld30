@@ -1,27 +1,30 @@
 package com.chrizel.ld30.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.Entity;
+import com.artemis.annotations.Wire;
+import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Gdx;
 import com.chrizel.ld30.components.MovementComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
-public class MovementSystem extends IteratingSystem {
+@Wire
+public class MovementSystem extends EntityProcessingSystem {
 
-    private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<MovementComponent> mm = ComponentMapper.getFor(MovementComponent.class);
+    private ComponentMapper<PositionComponent> pm;
+    private ComponentMapper<MovementComponent> mm;
 
-    public MovementSystem(int priority) {
-        super(Family.getFor(PositionComponent.class, MovementComponent.class), priority);
+    public MovementSystem() {
+        super(Aspect.getAspectForAll(PositionComponent.class, MovementComponent.class));
     }
 
     @Override
-    public void processEntity(Entity entity, float deltaTime) {
-        PositionComponent position = pm.get(entity);
-        MovementComponent movement = mm.get(entity);
+    protected void process(Entity e) {
+        PositionComponent position = pm.get(e);
+        MovementComponent movement = mm.get(e);
 
-        position.x += movement.velocityX * deltaTime;
-        position.y += movement.velocityY * deltaTime;
+        position.x += movement.velocityX * Gdx.graphics.getDeltaTime();
+        position.y += movement.velocityY * Gdx.graphics.getDeltaTime();
     }
 }
