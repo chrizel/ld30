@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.chrizel.ld30.components.*;
-import com.chrizel.ld30.systems.AnimationSystem;
-import com.chrizel.ld30.systems.MovementSystem;
-import com.chrizel.ld30.systems.PlayerInputSystem;
-import com.chrizel.ld30.systems.RenderSystem;
+import com.chrizel.ld30.systems.*;
 
 public class Game extends ApplicationAdapter {
     private Texture heroTexture;
@@ -29,6 +26,7 @@ public class Game extends ApplicationAdapter {
 
         engine = new PooledEngine();
         engine.addSystem(new MovementSystem());
+        engine.addSystem(new AttackSystem());
         engine.addSystem(new PlayerInputSystem());
         engine.addSystem(new RenderSystem(camera));
         engine.addSystem(new AnimationSystem(camera));
@@ -38,10 +36,12 @@ public class Game extends ApplicationAdapter {
         player.add(new PlayerComponent());
         player.add(new FacingComponent(FacingComponent.DOWN));
         player.add(new MovementComponent());
+        player.add(new AttackComponent("swing"));
         player.add(new AnimationComponent()
-            .newAnimation("idle", heroTexture, 1, 16, 16, new int[] { 0 })
-            .newAnimation("walk", heroTexture, 0.1f, 16, 16, new int[] { 0, 1, 2, 3 })
-            .setAnimation("idle")
+                        .newAnimation("idle", heroTexture, 1, true, 16, 16, new int[]{0})
+                        .newAnimation("walk", heroTexture, 0.1f, true, 16, 16, new int[]{0, 1, 2, 3})
+                        .newAnimation("swing", heroTexture, 0.025f, false, 16, 16, new int[]{5, 6, 7, 8, 9})
+                        .setAnimation("idle")
         );
 
         engine.addEntity(player);

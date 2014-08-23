@@ -8,16 +8,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.chrizel.ld30.components.*;
 
-import javax.swing.text.Position;
-
 public class PlayerInputSystem extends IteratingSystem {
     ComponentMapper<MovementComponent> mm = ComponentMapper.getFor(MovementComponent.class);
     ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
     ComponentMapper<FacingComponent> fm = ComponentMapper.getFor(FacingComponent.class);
     ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
+    ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
 
     public PlayerInputSystem() {
-        super(Family.getFor(MovementComponent.class, PlayerComponent.class, FacingComponent.class, AnimationComponent.class));
+        super(Family.getFor(MovementComponent.class, PlayerComponent.class, FacingComponent.class, AnimationComponent.class, AttackComponent.class), 25);
     }
 
     @Override
@@ -26,6 +25,7 @@ public class PlayerInputSystem extends IteratingSystem {
         PlayerComponent player = pm.get(entity);
         FacingComponent facing = fm.get(entity);
         AnimationComponent animation = am.get(entity);
+        AttackComponent attack = attackMapper.get(entity);
 
         boolean walk = false;
 
@@ -53,6 +53,12 @@ public class PlayerInputSystem extends IteratingSystem {
             movement.velocityY = 0;
         }
 
-        animation.setAnimation(walk ? "walk" : "idle");
+        if (!attack.isAttacking) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                attack.isAttacking = true;
+            } else {
+                animation.setAnimation(walk ? "walk" : "idle");
+            }
+        }
     }
 }

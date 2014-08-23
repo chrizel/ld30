@@ -16,13 +16,13 @@ public class AnimationSystem extends EntitySystem {
 
     private SpriteBatch batch;
     private OrthographicCamera camera;
-    float stateTime;
 
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
     private ComponentMapper<FacingComponent> fm = ComponentMapper.getFor(FacingComponent.class);
 
     public AnimationSystem(OrthographicCamera camera) {
+        super(75);
         batch = new SpriteBatch();
         this.camera = camera;
     }
@@ -34,7 +34,6 @@ public class AnimationSystem extends EntitySystem {
     @Override
     public void addedToEngine(Engine engine) {
         entities = engine.getEntitiesFor(Family.getFor(PositionComponent.class, AnimationComponent.class));
-        stateTime = 0;
     }
 
     @Override
@@ -45,7 +44,6 @@ public class AnimationSystem extends EntitySystem {
     public void update(float deltaTime) {
         PositionComponent positionComponent;
         AnimationComponent animationComponent;
-        stateTime += deltaTime;
 
         camera.update();
 
@@ -61,7 +59,8 @@ public class AnimationSystem extends EntitySystem {
             Animation animation = animationComponent.getAnimation();
 
             if (animation != null) {
-                TextureRegion region = animation.getKeyFrame(stateTime, true);
+                animationComponent.setStateTime(animationComponent.getStateTime() + deltaTime);
+                TextureRegion region = animation.getKeyFrame(animationComponent.getStateTime(), animationComponent.isLooping());
                 float rotation = 0.0f;
                 float x = positionComponent.x;
                 float y = positionComponent.y;
