@@ -9,4 +9,8 @@ public class DrawableComponent extends Component {
     public DrawableComponent(TextureRegion region) {
         this.region = region;
     }
+
+    public DrawableComponent() {
+        this(null);
+    }
 }

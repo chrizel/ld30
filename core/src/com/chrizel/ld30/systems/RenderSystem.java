@@ -8,17 +8,19 @@ import com.artemis.annotations.Wire;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.chrizel.ld30.components.DrawableComponent;
+import com.chrizel.ld30.components.FacingComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
 @Wire
-public class RenderSystem extends EntitySystem implements Disposable {
+public class RenderSystem extends EntitySystem {
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
     private ComponentMapper<PositionComponent> pm;
     private ComponentMapper<DrawableComponent> dm;
+    private ComponentMapper<FacingComponent> fm;
 
     public RenderSystem(OrthographicCamera camera) {
         super(Aspect.getAspectForAll(PositionComponent.class, DrawableComponent.class));
@@ -42,7 +44,17 @@ public class RenderSystem extends EntitySystem implements Disposable {
             positionComponent = pm.get(e);
             drawableComponent = dm.get(e);
 
-            batch.draw(drawableComponent.region, positionComponent.x, positionComponent.y);
+            TextureRegion region = drawableComponent.region;
+            float rotation = 0.0f;
+            float x = positionComponent.x;
+            float y = positionComponent.y;
+
+            FacingComponent facing = fm.getSafe(e);
+            if (facing != null) {
+                rotation = facing.getRotation();
+            }
+
+            batch.draw(region, x, y, region.getRegionWidth() / 2, region.getRegionHeight() / 2, region.getRegionWidth(), region.getRegionHeight(), 1.0f, 1.0f, rotation);
         }
 
         batch.end();

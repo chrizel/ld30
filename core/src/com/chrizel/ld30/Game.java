@@ -7,7 +7,6 @@ import com.artemis.managers.TagManager;
 import com.artemis.utils.EntityBuilder;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,7 +16,6 @@ import com.chrizel.ld30.systems.*;
 public class Game extends ApplicationAdapter {
     private Texture heroTexture;
     private World world;
-    private MapSystem mapSystem;
 
     @Override
     public void create() {
@@ -27,7 +25,6 @@ public class Game extends ApplicationAdapter {
         camera.update();
 
         heroTexture = new Texture("hero.png");
-        mapSystem = new MapSystem(camera, "tiles1.png", "tiles2.png", "map1.png", "map2.png");
 
         world = new World();
         world.setManager(new TagManager());
@@ -40,9 +37,10 @@ public class Game extends ApplicationAdapter {
         world.setSystem(new DamageSystem());
         world.setSystem(new DeathSystem());
         world.setSystem(new PortalSystem());
-        world.setSystem(mapSystem);
+        world.setSystem(new MapSystem(camera, "tiles1.png", "tiles2.png", "map1.png", "map2.png"));
+
+        world.setSystem(new AnimationSystem());
         world.setSystem(new RenderSystem(camera));
-        world.setSystem(new AnimationSystem(camera));
         world.setSystem(new HUDSystem());
         world.initialize();
 
@@ -57,6 +55,7 @@ public class Game extends ApplicationAdapter {
                         new HealthComponent(100f),
                         new ColliderComponent(8f, 8f),
                         new CorpseComponent(new TextureRegion(heroTexture, 160, 0, 16, 16)),
+                        new DrawableComponent(),
                         new AnimationComponent()
                                 .newAnimation("idle", heroTexture, 1, true, 16, 16, new int[]{0})
                                 .newAnimation("walk", heroTexture, 0.08f, true, 16, 16, new int[]{0, 1, 2, 3})
@@ -66,8 +65,6 @@ public class Game extends ApplicationAdapter {
                 )
                 .tag("player")
                 .build();
-
-        mapSystem.loadScreen();
     }
 
     @Override

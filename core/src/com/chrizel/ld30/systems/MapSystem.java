@@ -48,6 +48,12 @@ public class MapSystem extends VoidEntitySystem {
         this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
     }
 
+    @Override
+    protected void initialize() {
+        super.initialize();
+        loadScreen();
+    }
+
     public void loadScreen() {
         Pixmap pixmap = activeMap == 0 ? pixmap1 : pixmap2;
         Texture tilesTexture = activeMap == 0 ? tilesTexture1 : tilesTexture2;
@@ -74,6 +80,7 @@ public class MapSystem extends VoidEntitySystem {
                 } else if (pixel == Color.rgba8888(1f, 0f, 0f, 1f)) {
                     new EntityBuilder(world)
                             .with(
+                                    new DrawableComponent(),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new AttackComponent("attack", 1f, 40f, 16f, 16f),
                                     new HealthComponent(100f),
