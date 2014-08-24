@@ -8,6 +8,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.chrizel.ld30.Utils;
 import com.chrizel.ld30.components.*;
 
@@ -83,6 +84,11 @@ public class DamageSystem extends EntitySystem {
                         AnimationComponent ac = animationMapper.getSafe(e2);
                         if (ac != null && ac.hasAnimation("hit")) {
                             ac.setAnimation("hit");
+                        }
+
+                        if (e2.getComponent(Blink.class) == null) {
+                            e2.addComponent(new Blink(Color.RED.toFloatBits(), 3, .25f));
+                            e2.changedInWorld();
                         }
                     }
                 }

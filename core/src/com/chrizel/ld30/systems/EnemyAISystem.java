@@ -11,20 +11,20 @@ import com.chrizel.ld30.components.*;
 import java.util.Random;
 
 @Wire
-public class AutoMoveSystem extends EntityProcessingSystem {
-    ComponentMapper<AutoMoveComponent> amm;
+public class EnemyAISystem extends EntityProcessingSystem {
+    ComponentMapper<EnemyAI> amm;
     ComponentMapper<PositionComponent> pm;
     ComponentMapper<MovementComponent> mm;
     ComponentMapper<AttackComponent> am;
     Random random = new Random();
 
-    public AutoMoveSystem() {
-        super(Aspect.getAspectForAll(AutoMoveComponent.class, PositionComponent.class, MovementComponent.class));
+    public EnemyAISystem() {
+        super(Aspect.getAspectForAll(EnemyAI.class, PositionComponent.class, MovementComponent.class));
     }
 
     @Override
     protected void process(Entity e) {
-        AutoMoveComponent amc = amm.get(e);
+        EnemyAI amc = amm.get(e);
         PositionComponent position = pm.get(e);
         MovementComponent movement = mm.get(e);
 

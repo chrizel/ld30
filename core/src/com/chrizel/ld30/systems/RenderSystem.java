@@ -9,9 +9,11 @@ import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.chrizel.ld30.components.DrawableComponent;
+import com.chrizel.ld30.components.Drawable;
 import com.chrizel.ld30.components.FacingComponent;
 import com.chrizel.ld30.components.PositionComponent;
+
+import java.util.Random;
 
 @Wire
 public class RenderSystem extends EntitySystem {
@@ -19,11 +21,11 @@ public class RenderSystem extends EntitySystem {
     private OrthographicCamera camera;
 
     private ComponentMapper<PositionComponent> pm;
-    private ComponentMapper<DrawableComponent> dm;
+    private ComponentMapper<Drawable> dm;
     private ComponentMapper<FacingComponent> fm;
 
     public RenderSystem(OrthographicCamera camera) {
-        super(Aspect.getAspectForAll(PositionComponent.class, DrawableComponent.class));
+        super(Aspect.getAspectForAll(PositionComponent.class, Drawable.class));
         batch = new SpriteBatch();
         this.camera = camera;
     }
@@ -31,7 +33,7 @@ public class RenderSystem extends EntitySystem {
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
         PositionComponent positionComponent;
-        DrawableComponent drawableComponent;
+        Drawable drawable;
 
         camera.update();
 
@@ -42,9 +44,9 @@ public class RenderSystem extends EntitySystem {
             Entity e = entities.get(i);
 
             positionComponent = pm.get(e);
-            drawableComponent = dm.get(e);
+            drawable = dm.get(e);
 
-            TextureRegion region = drawableComponent.region;
+            TextureRegion region = drawable.region;
             float rotation = 0.0f;
             float x = positionComponent.x;
             float y = positionComponent.y;
@@ -54,6 +56,7 @@ public class RenderSystem extends EntitySystem {
                 rotation = facing.getRotation();
             }
 
+            batch.setColor(drawable.tint);
             batch.draw(region, x, y, region.getRegionWidth() / 2, region.getRegionHeight() / 2, region.getRegionWidth(), region.getRegionHeight(), 1.0f, 1.0f, rotation);
         }
 

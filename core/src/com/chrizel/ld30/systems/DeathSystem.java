@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.EntityBuilder;
 import com.chrizel.ld30.components.CorpseComponent;
-import com.chrizel.ld30.components.DrawableComponent;
+import com.chrizel.ld30.components.Drawable;
 import com.chrizel.ld30.components.HealthComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
@@ -33,7 +33,7 @@ public class DeathSystem extends EntityProcessingSystem {
                 new EntityBuilder(world)
                         .with(
                                 new PositionComponent(position.x, position.y),
-                                new DrawableComponent(corpse.corpseTexture)
+                                new Drawable(corpse.corpseTexture)
                         )
                         .group("mapObject")
                         .build();

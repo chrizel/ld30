@@ -8,15 +8,15 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.chrizel.ld30.components.AnimationComponent;
-import com.chrizel.ld30.components.DrawableComponent;
+import com.chrizel.ld30.components.Drawable;
 
 @Wire
 public class AnimationSystem extends EntityProcessingSystem {
     private ComponentMapper<AnimationComponent> am;
-    private ComponentMapper<DrawableComponent> dm;
+    private ComponentMapper<Drawable> dm;
 
     public AnimationSystem() {
-        super(Aspect.getAspectForAll(AnimationComponent.class, DrawableComponent.class));
+        super(Aspect.getAspectForAll(AnimationComponent.class, Drawable.class));
     }
 
     @Override
@@ -25,9 +25,9 @@ public class AnimationSystem extends EntityProcessingSystem {
         Animation animation = animationComponent.getAnimation();
 
         if (animation != null) {
-            DrawableComponent drawableComponent = dm.get(e);
+            Drawable drawable = dm.get(e);
             animationComponent.setStateTime(animationComponent.getStateTime() + Gdx.graphics.getDeltaTime());
-            drawableComponent.region = animation.getKeyFrame(animationComponent.getStateTime(), animationComponent.isLooping());
+            drawable.region = animation.getKeyFrame(animationComponent.getStateTime(), animationComponent.isLooping());
         }
     }
 }

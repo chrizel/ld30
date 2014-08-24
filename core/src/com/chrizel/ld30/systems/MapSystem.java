@@ -1,13 +1,10 @@
 package com.chrizel.ld30.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.World;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.VoidEntitySystem;
 import com.artemis.utils.EntityBuilder;
 import com.artemis.utils.ImmutableBag;
@@ -16,14 +13,13 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.chrizel.ld30.components.*;
 
-import java.util.ArrayList;
-
 @Wire
 public class MapSystem extends VoidEntitySystem {
     private ComponentMapper<PositionComponent> positionMapper;
 
     private Texture tilesTexture1;
     private Texture tilesTexture2;
+    private Texture heroTexture;
     private Pixmap pixmap1;
     private Pixmap pixmap2;
 
@@ -46,6 +42,7 @@ public class MapSystem extends VoidEntitySystem {
         this.pixmap1 = new Pixmap(Gdx.files.internal(mapName1));
         this.pixmap2 = new Pixmap(Gdx.files.internal(mapName2));
         this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
+        heroTexture = new Texture("hero.png");
     }
 
     @Override
@@ -72,7 +69,7 @@ public class MapSystem extends VoidEntitySystem {
                     new EntityBuilder(world)
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new DrawableComponent(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
+                                    new Drawable(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
                                     new ColliderComponent(16.0f, 16.0f)
                             )
                             .group("mapObject")
@@ -80,11 +77,11 @@ public class MapSystem extends VoidEntitySystem {
                 } else if (pixel == Color.rgba8888(1f, 0f, 0f, 1f)) {
                     new EntityBuilder(world)
                             .with(
-                                    new DrawableComponent(),
+                                    new Drawable(),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new AttackComponent("attack", 1f, 40f, 16f, 16f),
                                     new HealthComponent(100f),
-                                    new AutoMoveComponent(0, 16f * 3, 2f),
+                                    new EnemyAI(0, 16f * 3, 2f),
                                     new MovementComponent(5f),
                                     new AnimationComponent()
                                             .newAnimation("idle", enemy1, 0.25f, true, 16, 16, new int[]{0, 1})
@@ -101,9 +98,31 @@ public class MapSystem extends VoidEntitySystem {
                             .with(
                                     new PortalComponent(),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new DrawableComponent(new TextureRegion(tilesTexture, 16, 0, 16, 16))
+                                    new Drawable(new TextureRegion(tilesTexture, 16, 0, 16, 16))
                             )
                             .group("mapObject")
+                            .build();
+                } else if (pixel == Color.rgba8888(0f, 1f, 0f, 1f)) {
+                    float attackSpeed = 0.25f;
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new PlayerComponent(),
+                                    new FacingComponent(FacingComponent.RIGHT),
+                                    new MovementComponent(0, 0, 7f),
+                                    new AttackComponent("swing", attackSpeed, 300f, 13f, 13f),
+                                    new HealthComponent(100f),
+                                    new ColliderComponent(8f, 8f),
+                                    new CorpseComponent(new TextureRegion(heroTexture, 160, 0, 16, 16)),
+                                    new Drawable(),
+                                    new AnimationComponent()
+                                            .newAnimation("idle", heroTexture, 1, true, 16, 16, new int[]{0})
+                                            .newAnimation("walk", heroTexture, 0.08f, true, 16, 16, new int[]{0, 1, 2, 3})
+                                            .newAnimation("hit", heroTexture, 0.025f, true, 16, 16, new int[]{0, 1, 2, 3})
+                                            .newAnimation("swing", heroTexture, attackSpeed / 5, false, 16, 16, new int[]{5, 6, 7, 8, 9})
+                                            .setAnimation("idle")
+                            )
+                            .tag("player")
                             .build();
                 }
             }
@@ -118,6 +137,7 @@ public class MapSystem extends VoidEntitySystem {
         tilesTexture1.dispose();
         tilesTexture2.dispose();
         enemy1.dispose();
+        heroTexture.dispose();
     }
 
     @Override
