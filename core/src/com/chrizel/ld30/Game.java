@@ -51,7 +51,7 @@ public class Game extends ApplicationAdapter {
                 .with(
                         new PositionComponent(152f, 112f),
                         new PlayerComponent(),
-                        new FacingComponent(FacingComponent.DOWN),
+                        new FacingComponent(FacingComponent.RIGHT),
                         new MovementComponent(0, 0, 7f),
                         new AttackComponent("swing", attackSpeed, 300f, 13f, 13f),
                         new HealthComponent(100f),

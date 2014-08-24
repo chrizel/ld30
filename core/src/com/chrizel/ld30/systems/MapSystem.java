@@ -57,11 +57,6 @@ public class MapSystem extends VoidEntitySystem {
         while (!mapObjects.isEmpty()) {
             mapObjects.get(0).deleteFromWorld();
         }
-        /*
-        for (Entity entity : mapObjects) {
-            entity.deleteFromWorld();
-        }
-        */
 
         for (int y = Math.abs(screenY * screenHeight); y < Math.abs(screenY * screenHeight) + screenHeight; y++) {
             for (int x = screenX * screenWidth; x < (screenX * screenWidth) + screenWidth; x++) {
