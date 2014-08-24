@@ -17,6 +17,7 @@ import com.chrizel.ld30.components.PlayerComponent;
 
 @Wire
 public class HUDSystem extends VoidEntitySystem {
+    private MapSystem mapSystem;
     private ComponentMapper<HealthComponent> hm;
 
     private final BitmapFont font;
@@ -47,10 +48,18 @@ public class HUDSystem extends VoidEntitySystem {
         }
 
         batch.begin();
-        font.draw(batch, "Health: " + health, 5f, 25f);
+
+        batch.draw(darkPixel, 0, 480f - 32f, 128f, 32f);
+        font.draw(batch, "Health: " + health, 5f, 480f - 4f);
 
         if (health <= 0) {
             String gameOver = "Game Over";
+            batch.draw(darkPixel, 0, 0, 640f, 480f);
+            font.setScale(2.0f);
+            font.draw(batch, gameOver, 320f - font.getBounds(gameOver).width / 2, 260f);
+            font.setScale(1.0f);
+        } else if (mapSystem.win) {
+            String gameOver = "The End";
             batch.draw(darkPixel, 0, 0, 640f, 480f);
             font.setScale(2.0f);
             font.draw(batch, gameOver, 320f - font.getBounds(gameOver).width / 2, 260f);

@@ -38,6 +38,10 @@ public class PlayerInputSystem extends EntityProcessingSystem {
         AnimationComponent animation = am.get(e);
         AttackComponent attack = attackMapper.get(e);
 
+        if (!player.enabled) {
+            return;
+        }
+
         boolean up = Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP);
         boolean down = Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN);
         boolean left = Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT);

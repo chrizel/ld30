@@ -108,6 +108,10 @@ public class HitSystem extends EntitySystem {
                         Orb orb = om.getSafe(e2);
                         if (orb != null) {
                             mapSystem.spikeState = !mapSystem.spikeState;
+
+                            if (mapSystem.screenX == 0 && mapSystem.screenY == -2) {
+                                mapSystem.win();
+                            }
                         }
 
                         if (e2.getComponent(Blink.class) == null) {

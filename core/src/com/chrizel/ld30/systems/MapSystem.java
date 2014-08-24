@@ -26,9 +26,9 @@ public class MapSystem extends VoidEntitySystem {
     private Texture enemy2;
 
     public int activeMap = 0;
-    private int screenX = 1;
-    private int screenY = -2;
-    public boolean spikeState = false;
+    public int screenX = 0;
+    public int screenY = 0;
+    public boolean spikeState = true;
 
     private final int screenWidth = 20;
     private final int screenHeight = 15;
@@ -38,6 +38,8 @@ public class MapSystem extends VoidEntitySystem {
     public float globalTint = 0;
     public float globalTintState = 0;
     public float globalTintTime = .5f;
+
+    public boolean win = false;
 
     public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName1, String mapName2) {
         super();
@@ -224,6 +226,12 @@ public class MapSystem extends VoidEntitySystem {
                 }
             }
         }
+    }
+
+    public void win() {
+        win = true;
+        System.out.println("you won!");
+        world.getManager(TagManager.class).getEntity("player").getComponent(PlayerComponent.class).enabled = false;
     }
 
     @Override
