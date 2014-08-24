@@ -17,7 +17,7 @@ public class PortalSystem extends EntityProcessingSystem {
     ComponentMapper<PositionComponent> pm;
     ComponentMapper<Collider> cm;
 
-    Collider portalCollider = new Collider(16f, 16f);
+    Collider portalCollider = new Collider(8f, 8f);
 
     public PortalSystem() {
         super(Aspect.getAspectForAll(PortalComponent.class, PositionComponent.class));

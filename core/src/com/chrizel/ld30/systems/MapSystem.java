@@ -194,9 +194,9 @@ public class MapSystem extends VoidEntitySystem {
         TagManager tagManager = world.getManager(TagManager.class);
 
         if (activeMap == 0) {
-            Gdx.gl.glClearColor(.9f, 1f, .9f, 1);
+            Gdx.gl.glClearColor(.94f, .94f, .94f, 1);
         } else {
-            Gdx.gl.glClearColor(1f, .9f, 1f, 1);
+            Gdx.gl.glClearColor(.43f, .43f, .43f, 1);
         }
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
