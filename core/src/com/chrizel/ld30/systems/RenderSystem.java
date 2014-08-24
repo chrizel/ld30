@@ -81,6 +81,10 @@ public class RenderSystem extends EntitySystem {
             drawable = dm.get(e);
 
             TextureRegion region = drawable.region;
+            if (region == null) {
+                continue;
+            }
+
             float rotation = 0.0f;
             float x = positionComponent.x;
             float y = positionComponent.y;

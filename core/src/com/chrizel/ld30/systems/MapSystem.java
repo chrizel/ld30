@@ -91,10 +91,9 @@ public class MapSystem extends VoidEntitySystem {
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(new TextureRegion(tilesTexture, 0, 16, 16, 16)),
-                                    new Spike(true, new TextureRegion(tilesTexture, 0, 16, 16, 16), new TextureRegion(tilesTexture, 16, 16, 16, 16)),
+                                    new Spike(Spike.ORANGE, new TextureRegion(tilesTexture, 0, 16, 16, 16), new TextureRegion(tilesTexture, 16, 16, 16, 16)),
                                     new Collider(16f, 16f)
                             )
-                            .group("spike")
                             .group("mapObject")
                             .build();
                 } else if (pixel == 517472255 /* bright blue */) {
@@ -103,10 +102,20 @@ public class MapSystem extends VoidEntitySystem {
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(),
-                                    new Spike(false, new TextureRegion(tilesTexture, 16, 32, 16, 16), new TextureRegion(tilesTexture, 0, 32, 16, 16)),
+                                    new Spike(Spike.BLUE, new TextureRegion(tilesTexture, 16, 32, 16, 16), new TextureRegion(tilesTexture, 0, 32, 16, 16)),
                                     new Collider(16f, 16f)
                             )
-                            .group("spike")
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == 1325334783 /* bright green */) {
+                    // green spikes
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(),
+                                    new Spike(Spike.GREEN, new TextureRegion(tilesTexture, 32, 16, 16, 16), new TextureRegion(tilesTexture, 48, 16, 16, 16)),
+                                    new Collider(16f, 16f)
+                            )
                             .group("mapObject")
                             .build();
                 } else if (pixel == -16711681 /* purple */) {
@@ -140,9 +149,10 @@ public class MapSystem extends VoidEntitySystem {
                                     new CorpseComponent(new TextureRegion(enemy1, 96, 0, 16, 16)),
                                     new Collider(8f, 8f)
                             )
+                            .group("enemy")
                             .group("mapObject")
                             .build();
-                } else if (pixel == Color.rgba8888(0f, 1f, 0f, 1f)) {
+                } else if (pixel == -3014401 /* yellow */) {
                     // Player already exists in game?
                     if (world.getManager(TagManager.class).isRegistered("player")) {
                         continue;
