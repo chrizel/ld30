@@ -79,7 +79,7 @@ public class MapSystem extends VoidEntitySystem {
                     // portal
                     new EntityBuilder(world)
                             .with(
-                                    new PortalComponent(),
+                                    new PortalComponent(.5f),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(new TextureRegion(tilesTexture, (128 * activeMap) + 16, 0, 16, 16))
                             )

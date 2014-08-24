@@ -16,8 +16,9 @@ public class PortalSystem extends EntityProcessingSystem {
     MapSystem mapSystem;
     ComponentMapper<PositionComponent> pm;
     ComponentMapper<Collider> cm;
+    protected ComponentMapper<PortalComponent> mPortalComponent;
 
-    Collider portalCollider = new Collider(8f, 8f);
+    Collider portalCollider = new Collider(16f, 16f);
 
     public PortalSystem() {
         super(Aspect.getAspectForAll(PortalComponent.class, PositionComponent.class));
@@ -33,12 +34,22 @@ public class PortalSystem extends EntityProcessingSystem {
         Entity player = tagManager.getEntity("player");
         PositionComponent playerPosition = pm.get(player);
         Collider playerCollider = cm.get(player);
-
+        PortalComponent portalComponent = mPortalComponent.get(e);
         PositionComponent portalPosition = pm.get(e);
 
         if (Utils.collide(playerPosition, playerCollider, portalPosition, portalCollider, 0, 0)) {
-            mapSystem.activeMap = mapSystem.activeMap == 0 ? 1 : 0;
-            mapSystem.loadScreen();
+            if (portalComponent.state < 0) {
+                portalComponent.state = 0;
+            }
+            portalComponent.state += world.getDelta();
+
+            if (portalComponent.state >= portalComponent.portTime) {
+                portalComponent.state = -1;
+                mapSystem.activeMap = mapSystem.activeMap == 0 ? 1 : 0;
+                mapSystem.loadScreen();
+            }
+        } else {
+            portalComponent.state = -1f;
         }
     }
 }
