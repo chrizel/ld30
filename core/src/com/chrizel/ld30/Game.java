@@ -27,7 +27,7 @@ public class Game extends ApplicationAdapter {
         camera.update();
 
         heroTexture = new Texture("hero.png");
-        mapSystem = new MapSystem(camera, "tiles.png", "map1.png");
+        mapSystem = new MapSystem(camera, "tiles1.png", "tiles2.png", "map1.png", "map2.png");
 
         world = new World();
         world.setManager(new TagManager());
@@ -39,6 +39,7 @@ public class Game extends ApplicationAdapter {
         world.setSystem(new AutoMoveSystem());
         world.setSystem(new DamageSystem());
         world.setSystem(new DeathSystem());
+        world.setSystem(new PortalSystem());
         world.setSystem(mapSystem);
         world.setSystem(new RenderSystem(camera));
         world.setSystem(new AnimationSystem(camera));
@@ -80,8 +81,6 @@ public class Game extends ApplicationAdapter {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(.6f, .6f, .6f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
     }

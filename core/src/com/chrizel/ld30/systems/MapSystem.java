@@ -6,27 +6,30 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.GroupManager;
+import com.artemis.managers.TagManager;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.systems.VoidEntitySystem;
 import com.artemis.utils.EntityBuilder;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.chrizel.ld30.components.*;
 
 import java.util.ArrayList;
 
 @Wire
-public class MapSystem extends EntityProcessingSystem {
+public class MapSystem extends VoidEntitySystem {
     private ComponentMapper<PositionComponent> positionMapper;
 
-    private Texture tilesTexture;
-    private Pixmap pixmap;
+    private Texture tilesTexture1;
+    private Texture tilesTexture2;
+    private Pixmap pixmap1;
+    private Pixmap pixmap2;
+
     private Texture enemy1;
 
+    public int activeMap = 0;
     private int screenX = 0;
     private int screenY = 0;
 
@@ -35,16 +38,31 @@ public class MapSystem extends EntityProcessingSystem {
     private final int screenHeight = 15;
     private OrthographicCamera camera;
 
-    public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName) {
-        super(Aspect.getAspectForAll(PlayerComponent.class, PositionComponent.class));
+    public MapSystem(OrthographicCamera camera, String tilesTexture1, String tilesTexture2, String mapName1, String mapName2) {
+        super();
         this.camera = camera;
-        this.tilesTexture = new Texture(Gdx.files.internal(tilesTexture));
-        this.pixmap = new Pixmap(Gdx.files.internal(mapName));
+        this.tilesTexture1 = new Texture(Gdx.files.internal(tilesTexture1));
+        this.tilesTexture2 = new Texture(Gdx.files.internal(tilesTexture2));
+        this.pixmap1 = new Pixmap(Gdx.files.internal(mapName1));
+        this.pixmap2 = new Pixmap(Gdx.files.internal(mapName2));
         this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
     }
 
     public void loadScreen() {
-        //System.out.println("loadScreen " + screenX + "/" + screenY);
+        Pixmap pixmap = activeMap == 0 ? pixmap1 : pixmap2;
+        Texture tilesTexture = activeMap == 0 ? tilesTexture1 : tilesTexture2;
+
+        // Remove old entities...
+        ImmutableBag<Entity> mapObjects = world.getManager(GroupManager.class).getEntities("mapObject");
+        while (!mapObjects.isEmpty()) {
+            mapObjects.get(0).deleteFromWorld();
+        }
+        /*
+        for (Entity entity : mapObjects) {
+            entity.deleteFromWorld();
+        }
+        */
+
         for (int y = Math.abs(screenY * screenHeight); y < Math.abs(screenY * screenHeight) + screenHeight; y++) {
             for (int x = screenX * screenWidth; x < (screenX * screenWidth) + screenWidth; x++) {
                 int pixel = pixmap.getPixel(x, y);
@@ -76,6 +94,15 @@ public class MapSystem extends EntityProcessingSystem {
                             )
                             .group("mapObject")
                             .build();
+                } else if (pixel == Color.rgba8888(0f, 0f, 1f, 1f)) {
+                    new EntityBuilder(world)
+                            .with(
+                                    new PortalComponent(),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new DrawableComponent(new TextureRegion(tilesTexture, 16, 0, 16, 16))
+                            )
+                            .group("mapObject")
+                            .build();
                 }
             }
         }
@@ -84,13 +111,25 @@ public class MapSystem extends EntityProcessingSystem {
     @Override
     protected void dispose() {
         super.dispose();
-        pixmap.dispose();
-        tilesTexture.dispose();
+        pixmap1.dispose();
+        pixmap2.dispose();
+        tilesTexture1.dispose();
+        tilesTexture2.dispose();
         enemy1.dispose();
     }
 
     @Override
-    protected void process(Entity e) {
+    protected void processSystem() {
+        TagManager tagManager = world.getManager(TagManager.class);
+
+        if (activeMap == 0) {
+            Gdx.gl.glClearColor(.9f, 1f, .9f, 1);
+        } else {
+            Gdx.gl.glClearColor(1f, .9f, 1f, 1);
+        }
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         float x = screenX * screenWidth * 16;
         float y = screenY * screenHeight * 16;
 
@@ -99,8 +138,9 @@ public class MapSystem extends EntityProcessingSystem {
             camera.position.x = x + 160;
         } else if (camera.position.y != y + 120) {
             camera.position.y = y + 120;
-        } else {
-            PositionComponent position = positionMapper.get(e);
+        } else if (tagManager.isRegistered("player")) {
+            Entity player = tagManager.getEntity("player");
+            PositionComponent position = positionMapper.get(player);
             boolean load = false;
 
             // Is the player out of screen?
@@ -119,11 +159,6 @@ public class MapSystem extends EntityProcessingSystem {
             }
 
             if (load) {
-                ImmutableBag<Entity> mapObjects = world.getManager(GroupManager.class).getEntities("mapObject");
-                for (Entity entity : mapObjects) {
-                    entity.deleteFromWorld();
-                }
-
                 loadScreen();
             }
         }
