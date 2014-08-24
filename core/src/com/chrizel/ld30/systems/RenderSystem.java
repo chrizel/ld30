@@ -15,10 +15,7 @@ import com.chrizel.ld30.components.Drawable;
 import com.chrizel.ld30.components.FacingComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
 @Wire
 public class RenderSystem extends EntitySystem {
@@ -62,7 +59,8 @@ public class RenderSystem extends EntitySystem {
             for (int i = 0; i < entities.size(); ++i) {
                 sortedEntities.add(entities.get(i));
             }
-            sortedEntities.sort(new Comparator<Entity>() {
+
+            Collections.sort(sortedEntities, new Comparator<Entity>() {
                 @Override
                 public int compare(Entity e1, Entity e2) {
                     float z1 = pm.get(e1).z, z2 = pm.get(e2).z;
