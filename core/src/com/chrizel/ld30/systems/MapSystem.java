@@ -28,12 +28,16 @@ public class MapSystem extends VoidEntitySystem {
     private int screenX = 0;
     private int screenY = 0;
 
-    private float cameraSpeed = 100.0f;
     private final int screenWidth = 20;
     private final int screenHeight = 15;
     private OrthographicCamera camera;
 
     public boolean spikeState = true;
+
+    public boolean globalTintActive = false;
+    public float globalTint = 0;
+    public float globalTintState = 0;
+    public float globalTintTime = .5f;
 
     public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName1, String mapName2) {
         super();
@@ -79,7 +83,7 @@ public class MapSystem extends VoidEntitySystem {
                     // portal
                     new EntityBuilder(world)
                             .with(
-                                    new PortalComponent(.5f),
+                                    new PortalComponent(globalTintTime),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(new TextureRegion(tilesTexture, (128 * activeMap) + 16, 0, 16, 16))
                             )
@@ -203,10 +207,24 @@ public class MapSystem extends VoidEntitySystem {
     protected void processSystem() {
         TagManager tagManager = world.getManager(TagManager.class);
 
-        if (activeMap == 0) {
-            Gdx.gl.glClearColor(.94f, .94f, .94f, 1);
+        // Calculate global tint...
+        if (globalTintActive) {
+            globalTintState += world.getDelta();
+            float t = globalTintState / globalTintTime;
+
+            if (activeMap == 0) {
+                globalTint = new Color(1f - 1f * t, 1f - 1f * t, 1f - 1f * t, 1f).toFloatBits();
+                Gdx.gl.glClearColor(1f - .57f * t, 1f - .57f * t, 1f - .57f * t, 1);
+            } else {
+                globalTint = new Color(1f, 1f, 1f, 1f - 1f * t).toFloatBits();
+                Gdx.gl.glClearColor(.43f + .57f * t, .43f + .57f * t, .43f + .57f * t, 1);
+            }
         } else {
-            Gdx.gl.glClearColor(.43f, .43f, .43f, 1);
+            if (activeMap == 0) {
+                Gdx.gl.glClearColor(.94f, .94f, .94f, 1);
+            } else {
+                Gdx.gl.glClearColor(.43f, .43f, .43f, 1);
+            }
         }
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

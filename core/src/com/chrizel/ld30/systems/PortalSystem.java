@@ -6,10 +6,14 @@ import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.TagManager;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
 import com.chrizel.ld30.Utils;
 import com.chrizel.ld30.components.Collider;
 import com.chrizel.ld30.components.PortalComponent;
 import com.chrizel.ld30.components.PositionComponent;
+
+import java.awt.*;
 
 @Wire
 public class PortalSystem extends EntityProcessingSystem {
@@ -40,15 +44,20 @@ public class PortalSystem extends EntityProcessingSystem {
         if (Utils.collide(playerPosition, playerCollider, portalPosition, portalCollider, 0, 0)) {
             if (portalComponent.state < 0) {
                 portalComponent.state = 0;
+                mapSystem.globalTintActive = true;
+                mapSystem.globalTintState = 0;
+                mapSystem.globalTint = Color.WHITE.toFloatBits();
             }
             portalComponent.state += world.getDelta();
 
             if (portalComponent.state >= portalComponent.portTime) {
+                mapSystem.globalTintActive = false;
                 portalComponent.state = -1;
                 mapSystem.activeMap = mapSystem.activeMap == 0 ? 1 : 0;
                 mapSystem.loadScreen();
             }
-        } else {
+        } else if (portalComponent.state >= 0) {
+            mapSystem.globalTintActive = false;
             portalComponent.state = -1f;
         }
     }

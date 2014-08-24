@@ -7,6 +7,7 @@ import com.artemis.EntitySystem;
 import com.artemis.annotations.Wire;
 import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,6 +22,7 @@ import java.util.Random;
 
 @Wire
 public class RenderSystem extends EntitySystem {
+    protected MapSystem mapSystem;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private boolean dirty = true;
@@ -94,7 +96,11 @@ public class RenderSystem extends EntitySystem {
                 rotation = facing.getRotation();
             }
 
-            batch.setColor(drawable.tint);
+            if (mapSystem.globalTintActive) {
+                batch.setColor(mapSystem.globalTint);
+            } else {
+                batch.setColor(drawable.tint);
+            }
             batch.draw(region, x, y, region.getRegionWidth() / 2, region.getRegionHeight() / 2, region.getRegionWidth(), region.getRegionHeight(), 1.0f, 1.0f, rotation);
         }
 
