@@ -31,7 +31,7 @@ public class Game extends ApplicationAdapter {
         world.setSystem(new HitSystem());
         world.setSystem(new DeathSystem());
         world.setSystem(new PortalSystem());
-        world.setSystem(new MapSystem(camera, "tiles1.png", "tiles2.png", "map1.png", "map2.png"));
+        world.setSystem(new MapSystem(camera, "tiles1.png", "map1.png", "map2.png"));
         world.setSystem(new OrbSystem());
         world.setSystem(new SpikeSystem());
         world.setSystem(new BlinkSystem());

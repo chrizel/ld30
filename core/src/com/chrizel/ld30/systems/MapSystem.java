@@ -17,8 +17,7 @@ import com.chrizel.ld30.components.*;
 public class MapSystem extends VoidEntitySystem {
     private ComponentMapper<PositionComponent> positionMapper;
 
-    private Texture tilesTexture1;
-    private Texture tilesTexture2;
+    private Texture tilesTexture;
     private Texture heroTexture;
     private Pixmap pixmap1;
     private Pixmap pixmap2;
@@ -36,11 +35,10 @@ public class MapSystem extends VoidEntitySystem {
 
     public boolean spikeState = true;
 
-    public MapSystem(OrthographicCamera camera, String tilesTexture1, String tilesTexture2, String mapName1, String mapName2) {
+    public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName1, String mapName2) {
         super();
         this.camera = camera;
-        this.tilesTexture1 = new Texture(Gdx.files.internal(tilesTexture1));
-        this.tilesTexture2 = new Texture(Gdx.files.internal(tilesTexture2));
+        this.tilesTexture = new Texture(Gdx.files.internal(tilesTexture));
         this.pixmap1 = new Pixmap(Gdx.files.internal(mapName1));
         this.pixmap2 = new Pixmap(Gdx.files.internal(mapName2));
         this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
@@ -55,7 +53,7 @@ public class MapSystem extends VoidEntitySystem {
 
     public void loadScreen() {
         Pixmap pixmap = activeMap == 0 ? pixmap1 : pixmap2;
-        Texture tilesTexture = activeMap == 0 ? tilesTexture1 : tilesTexture2;
+        Texture tilesTexture = this.tilesTexture;
 
         // Remove old entities...
         ImmutableBag<Entity> mapObjects = world.getManager(GroupManager.class).getEntities("mapObject");
@@ -72,7 +70,7 @@ public class MapSystem extends VoidEntitySystem {
                     new EntityBuilder(world)
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new Drawable(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
+                                    new Drawable(new TextureRegion(tilesTexture, (128 * activeMap) + 0, 0, 16, 16)),
                                     new Collider(16.0f, 16.0f)
                             )
                             .group("mapObject")
@@ -83,7 +81,7 @@ public class MapSystem extends VoidEntitySystem {
                             .with(
                                     new PortalComponent(),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new Drawable(new TextureRegion(tilesTexture, 16, 0, 16, 16))
+                                    new Drawable(new TextureRegion(tilesTexture, (128 * activeMap) + 16, 0, 16, 16))
                             )
                             .group("mapObject")
                             .build();
@@ -186,8 +184,7 @@ public class MapSystem extends VoidEntitySystem {
         super.dispose();
         pixmap1.dispose();
         pixmap2.dispose();
-        tilesTexture1.dispose();
-        tilesTexture2.dispose();
+        tilesTexture.dispose();
         enemy1.dispose();
         heroTexture.dispose();
     }
