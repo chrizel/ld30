@@ -23,16 +23,16 @@ public class MapSystem extends VoidEntitySystem {
     private Pixmap pixmap2;
 
     private Texture enemy1;
+    private Texture enemy2;
 
     public int activeMap = 0;
-    private int screenX = 0;
-    private int screenY = 0;
+    private int screenX = 1;
+    private int screenY = -2;
+    public boolean spikeState = false;
 
     private final int screenWidth = 20;
     private final int screenHeight = 15;
     private OrthographicCamera camera;
-
-    public boolean spikeState = true;
 
     public boolean globalTintActive = false;
     public float globalTint = 0;
@@ -46,6 +46,7 @@ public class MapSystem extends VoidEntitySystem {
         this.pixmap1 = new Pixmap(Gdx.files.internal(mapName1));
         this.pixmap2 = new Pixmap(Gdx.files.internal(mapName2));
         this.enemy1 = new Texture(Gdx.files.internal("enemy1.png"));
+        this.enemy2 = new Texture(Gdx.files.internal("enemy2.png"));
         heroTexture = new Texture("hero.png");
     }
 
@@ -86,6 +87,16 @@ public class MapSystem extends VoidEntitySystem {
                                     new PortalComponent(globalTintTime),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(new TextureRegion(tilesTexture, (128 * activeMap) + 16, 0, 16, 16))
+                            )
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == -124612097 /* pink */) {
+                    // heart
+                    new EntityBuilder(world)
+                            .with(
+                                    new Heart(100f),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(new TextureRegion(tilesTexture, 0, 64, 16, 16))
                             )
                             .group("mapObject")
                             .build();
@@ -140,8 +151,8 @@ public class MapSystem extends VoidEntitySystem {
                             .with(
                                     new Drawable(),
                                     new Hitable(),
-                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new AttackComponent("attack", 1f, 40f, 16f, 16f),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f, 50f),
+                                    new AttackComponent("attack", 1f, 30f, 16f, 16f),
                                     new HealthComponent(100f),
                                     new EnemyAI(0, 16f * 3, 2f),
                                     new MovementComponent(5f),
@@ -151,6 +162,28 @@ public class MapSystem extends VoidEntitySystem {
                                             .newAnimation("attack", enemy1, 0.1f, true, 16, 16, new int[]{4, 5})
                                             .setAnimation("idle"),
                                     new CorpseComponent(new TextureRegion(enemy1, 96, 0, 16, 16)),
+                                    new Collider(8f, 8f)
+                            )
+                            .group("enemy")
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == -2024454401 /* brown */) {
+                    // blue blob enemy
+                    new EntityBuilder(world)
+                            .with(
+                                    new Drawable(),
+                                    new Hitable(),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f, 50f),
+                                    new AttackComponent("attack", 1f, 30f, 16f, 16f),
+                                    new HealthComponent(100f),
+                                    new EnemyAI(16f * 3, 0, 2f),
+                                    new MovementComponent(5f),
+                                    new AnimationComponent()
+                                            .newAnimation("idle", enemy2, 0.25f, true, 16, 16, new int[]{0, 1})
+                                            .newAnimation("hit", enemy2, 0.1f, true, 16, 16, new int[]{2, 3})
+                                            .newAnimation("attack", enemy2, 0.1f, true, 16, 16, new int[]{4, 5})
+                                            .setAnimation("idle"),
+                                    new CorpseComponent(new TextureRegion(enemy2, 96, 0, 16, 16)),
                                     new Collider(8f, 8f)
                             )
                             .group("enemy")
@@ -200,6 +233,7 @@ public class MapSystem extends VoidEntitySystem {
         pixmap2.dispose();
         tilesTexture.dispose();
         enemy1.dispose();
+        enemy2.dispose();
         heroTexture.dispose();
     }
 

@@ -36,6 +36,7 @@ public class Game extends ApplicationAdapter {
         world.setSystem(new SpikeSystem());
         world.setSystem(new EnemySpikeSystem());
         world.setSystem(new BlinkSystem());
+        world.setSystem(new HeartSystem());
 
         world.setSystem(new AnimationSystem());
         world.setSystem(new RenderSystem(camera));
