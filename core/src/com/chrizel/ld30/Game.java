@@ -22,17 +22,20 @@ public class Game extends ApplicationAdapter {
         world = new World();
         world.setManager(new TagManager());
         world.setManager(new GroupManager());
+
         world.setSystem(new PlayerInputSystem());
         world.setSystem(new CollisionSystem());
         world.setSystem(new MovementSystem());
         world.setSystem(new AttackAnimationSystem());
         world.setSystem(new EnemyAISystem());
-        world.setSystem(new DamageSystem());
+        world.setSystem(new HitSystem());
         world.setSystem(new DeathSystem());
         world.setSystem(new PortalSystem());
         world.setSystem(new MapSystem(camera, "tiles1.png", "tiles2.png", "map1.png", "map2.png"));
-
+        world.setSystem(new OrbSystem());
+        world.setSystem(new SpikeSystem());
         world.setSystem(new BlinkSystem());
+
         world.setSystem(new AnimationSystem());
         world.setSystem(new RenderSystem(camera));
         world.setSystem(new HUDSystem());

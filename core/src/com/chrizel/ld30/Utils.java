@@ -2,15 +2,15 @@ package com.chrizel.ld30;
 
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.chrizel.ld30.components.ColliderComponent;
+import com.chrizel.ld30.components.Collider;
 import com.chrizel.ld30.components.PositionComponent;
 
 public class Utils {
 
     public static boolean collide(PositionComponent position1,
-                                   ColliderComponent collider1,
+                                   Collider collider1,
                                    PositionComponent position2,
-                                   ColliderComponent collider2,
+                                   Collider collider2,
                                    float addX1,
                                    float addY1) {
 

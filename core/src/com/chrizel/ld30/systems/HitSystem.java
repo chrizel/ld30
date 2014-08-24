@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -13,30 +12,42 @@ import com.chrizel.ld30.Utils;
 import com.chrizel.ld30.components.*;
 
 @Wire
-public class DamageSystem extends EntitySystem {
+public class HitSystem extends EntitySystem {
+    MapSystem mapSystem;
+
     ComponentMapper<HealthComponent> hm;
+    ComponentMapper<Orb> om;
     ComponentMapper<AttackComponent> am;
     ComponentMapper<PositionComponent> pm;
-    ComponentMapper<ColliderComponent> cm;
+    ComponentMapper<Collider> cm;
     ComponentMapper<FacingComponent> fm;
     ComponentMapper<AnimationComponent> animationMapper;
+    ComponentMapper<Hitable> mHitable;
 
-    private ColliderComponent tmpCollider = new ColliderComponent(0, 0);
+    private Collider tmpCollider = new Collider(0, 0);
 
-    public DamageSystem() {
-        super(Aspect.getAspectForAll(HealthComponent.class, PositionComponent.class, ColliderComponent.class));
+    public HitSystem() {
+        super(Aspect.getAspectForAll(Hitable.class, PositionComponent.class, Collider.class));
     }
 
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
         AttackComponent attack1;
         PositionComponent position1, position2;
-        ColliderComponent collider2;
-        HealthComponent health;
+        Collider collider2;
         FacingComponent facing;
+        Hitable hitable;
 
         for (int i = 0; i < entities.size(); ++i) {
             Entity e = entities.get(i);
+
+            hitable = mHitable.get(e);
+            if (hitable.state >= 0) {
+                hitable.state += world.getDelta();
+            }
+            if (hitable.state > hitable.hitTimeout) {
+                hitable.state = -1f;
+            }
 
             attack1 = am.getSafe(e);
             if (attack1 != null && attack1.isAttacking) {
@@ -72,18 +83,31 @@ public class DamageSystem extends EntitySystem {
                     }
 
                     Entity e2 = entities.get(j);
+                    hitable = mHitable.get(e2);
+                    if (hitable.state >= 0) {
+                        continue;
+                    }
 
                     position2 = pm.get(e2);
                     collider2 = cm.get(e2);
 
                     if (Utils.collide(position1, tmpCollider, position2, collider2, addX1, addY1)) {
-                        float damage = attack1.dps * Gdx.graphics.getDeltaTime();
-                        health = hm.get(e2);
-                        health.health -= damage;
+                        hitable.state = 0;
+                        HealthComponent health = hm.getSafe(e2);
+                        if (health != null) {
+                            float damage = attack1.dps * Gdx.graphics.getDeltaTime();
+                            health = hm.get(e2);
+                            health.health -= damage;
+                        }
 
                         AnimationComponent ac = animationMapper.getSafe(e2);
                         if (ac != null && ac.hasAnimation("hit")) {
                             ac.setAnimation("hit");
+                        }
+
+                        Orb orb = om.getSafe(e2);
+                        if (orb != null) {
+                            mapSystem.spikeState = !mapSystem.spikeState;
                         }
 
                         if (e2.getComponent(Blink.class) == null) {

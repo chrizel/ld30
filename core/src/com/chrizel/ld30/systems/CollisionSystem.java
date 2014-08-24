@@ -8,7 +8,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.chrizel.ld30.components.ColliderComponent;
+import com.chrizel.ld30.components.Collider;
 import com.chrizel.ld30.components.MovementComponent;
 import com.chrizel.ld30.components.PositionComponent;
 import com.chrizel.ld30.Utils;
@@ -17,7 +17,7 @@ import com.chrizel.ld30.Utils;
 public class CollisionSystem extends EntitySystem {
 
     ComponentMapper<PositionComponent> pm;
-    ComponentMapper<ColliderComponent> cm;
+    ComponentMapper<Collider> cm;
     ComponentMapper<MovementComponent> mm;
 
     private Vector2 v1 = new Vector2();
@@ -26,13 +26,13 @@ public class CollisionSystem extends EntitySystem {
     private Vector2 v4 = new Vector2();
 
     public CollisionSystem() {
-        super(Aspect.getAspectForAll(PositionComponent.class, ColliderComponent.class));
+        super(Aspect.getAspectForAll(PositionComponent.class, Collider.class));
     }
 
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
         PositionComponent position1, position2;
-        ColliderComponent collider1, collider2;
+        Collider collider1, collider2;
         MovementComponent movement1;
 
         for (int i = 0; i < entities.size(); ++i) {
@@ -40,26 +40,28 @@ public class CollisionSystem extends EntitySystem {
 
             position1 = pm.get(e1);
             collider1 = cm.get(e1);
-            movement1 = mm.getSafe(e1);
+            if (collider1.enabled) {
+                movement1 = mm.getSafe(e1);
 
-            float velX = movement1 == null ? 0 : movement1.velocityX * movement1.speed * Gdx.graphics.getDeltaTime();
-            float velY = movement1 == null ? 0 : movement1.velocityY * movement1.speed * Gdx.graphics.getDeltaTime();
+                float velX = movement1 == null ? 0 : movement1.velocityX * movement1.speed * Gdx.graphics.getDeltaTime();
+                float velY = movement1 == null ? 0 : movement1.velocityY * movement1.speed * Gdx.graphics.getDeltaTime();
 
-            for (int j = 0; j < entities.size(); ++j) {
-                if (i == j) {
-                    continue;
-                }
+                for (int j = 0; j < entities.size(); ++j) {
+                    if (i == j) {
+                        continue;
+                    }
 
-                Entity e2 = entities.get(j);
+                    Entity e2 = entities.get(j);
 
-                position2 = pm.get(e2);
-                collider2 = cm.get(e2);
+                    position2 = pm.get(e2);
+                    collider2 = cm.get(e2);
 
-                // Do the two colliders collide?
-                if (Utils.collide(position1, collider1, position2, collider2, velX, velY)) {
-                    if (movement1 != null) {
-                        movement1.velocityX = 0;
-                        movement1.velocityY = 0;
+                    // Do the two colliders collide?
+                    if (collider2.enabled && Utils.collide(position1, collider1, position2, collider2, velX, velY)) {
+                        if (movement1 != null) {
+                            movement1.velocityX = 0;
+                            movement1.velocityY = 0;
+                        }
                     }
                 }
             }

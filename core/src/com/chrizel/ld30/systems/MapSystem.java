@@ -34,6 +34,8 @@ public class MapSystem extends VoidEntitySystem {
     private final int screenHeight = 15;
     private OrthographicCamera camera;
 
+    public boolean spikeState = true;
+
     public MapSystem(OrthographicCamera camera, String tilesTexture1, String tilesTexture2, String mapName1, String mapName2) {
         super();
         this.camera = camera;
@@ -66,18 +68,67 @@ public class MapSystem extends VoidEntitySystem {
                 int pixel = pixmap.getPixel(x, y);
 
                 if (pixel == Color.rgba8888(0f, 0f, 0f, 1f)) {
+                    // wall
                     new EntityBuilder(world)
                             .with(
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new Drawable(new TextureRegion(tilesTexture, 0, 0, 16, 16)),
-                                    new ColliderComponent(16.0f, 16.0f)
+                                    new Collider(16.0f, 16.0f)
+                            )
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == Color.rgba8888(0f, 0f, 1f, 1f)) {
+                    // portal
+                    new EntityBuilder(world)
+                            .with(
+                                    new PortalComponent(),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(new TextureRegion(tilesTexture, 16, 0, 16, 16))
+                            )
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == -8388353 /* orange */) {
+                    // orange spikes
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(new TextureRegion(tilesTexture, 0, 16, 16, 16)),
+                                    new Spike(true, new TextureRegion(tilesTexture, 0, 16, 16, 16), new TextureRegion(tilesTexture, 16, 16, 16, 16)),
+                                    new Collider(16f, 16f)
+                            )
+                            .group("spike")
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == 517472255 /* bright blue */) {
+                    // blue spikes
+                    new EntityBuilder(world)
+                            .with(
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(),
+                                    new Spike(false, new TextureRegion(tilesTexture, 16, 32, 16, 16), new TextureRegion(tilesTexture, 0, 32, 16, 16)),
+                                    new Collider(16f, 16f)
+                            )
+                            .group("spike")
+                            .group("mapObject")
+                            .build();
+                } else if (pixel == -16711681 /* purple */) {
+                    // orb
+                    new EntityBuilder(world)
+                            .with(
+                                    new Orb(new TextureRegion(tilesTexture, 0, 48, 16, 16), new TextureRegion(tilesTexture, 16, 48, 16, 16)),
+                                    new Hitable(.5f),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new Drawable(),
+                                    new Collider(8f, 8f)
                             )
                             .group("mapObject")
                             .build();
                 } else if (pixel == Color.rgba8888(1f, 0f, 0f, 1f)) {
+                    // green blob enemy
                     new EntityBuilder(world)
                             .with(
                                     new Drawable(),
+                                    new Hitable(),
                                     new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
                                     new AttackComponent("attack", 1f, 40f, 16f, 16f),
                                     new HealthComponent(100f),
@@ -89,30 +140,27 @@ public class MapSystem extends VoidEntitySystem {
                                             .newAnimation("attack", enemy1, 0.1f, true, 16, 16, new int[]{4, 5})
                                             .setAnimation("idle"),
                                     new CorpseComponent(new TextureRegion(enemy1, 96, 0, 16, 16)),
-                                    new ColliderComponent(8f, 8f)
-                            )
-                            .group("mapObject")
-                            .build();
-                } else if (pixel == Color.rgba8888(0f, 0f, 1f, 1f)) {
-                    new EntityBuilder(world)
-                            .with(
-                                    new PortalComponent(),
-                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
-                                    new Drawable(new TextureRegion(tilesTexture, 16, 0, 16, 16))
+                                    new Collider(8f, 8f)
                             )
                             .group("mapObject")
                             .build();
                 } else if (pixel == Color.rgba8888(0f, 1f, 0f, 1f)) {
+                    // Player already exists in game?
+                    if (world.getManager(TagManager.class).isRegistered("player")) {
+                        continue;
+                    }
+
                     float attackSpeed = 0.25f;
                     new EntityBuilder(world)
                             .with(
-                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f),
+                                    new PositionComponent(x * 16f, (screenHeight - 1 - y) * 16f, 100f),
+                                    new Hitable(),
                                     new PlayerComponent(),
                                     new FacingComponent(FacingComponent.RIGHT),
                                     new MovementComponent(0, 0, 7f),
                                     new AttackComponent("swing", attackSpeed, 300f, 13f, 13f),
                                     new HealthComponent(100f),
-                                    new ColliderComponent(8f, 8f),
+                                    new Collider(8f, 8f),
                                     new CorpseComponent(new TextureRegion(heroTexture, 160, 0, 16, 16)),
                                     new Drawable(),
                                     new AnimationComponent()
@@ -124,6 +172,10 @@ public class MapSystem extends VoidEntitySystem {
                             )
                             .tag("player")
                             .build();
+                } else if (pixel == -1) {
+                    // nothing, just background
+                } else {
+                    System.out.println("MapSystem: unknown color: " + pixel);
                 }
             }
         }

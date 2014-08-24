@@ -7,7 +7,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.managers.TagManager;
 import com.artemis.systems.EntityProcessingSystem;
 import com.chrizel.ld30.Utils;
-import com.chrizel.ld30.components.ColliderComponent;
+import com.chrizel.ld30.components.Collider;
 import com.chrizel.ld30.components.PortalComponent;
 import com.chrizel.ld30.components.PositionComponent;
 
@@ -15,9 +15,9 @@ import com.chrizel.ld30.components.PositionComponent;
 public class PortalSystem extends EntityProcessingSystem {
     MapSystem mapSystem;
     ComponentMapper<PositionComponent> pm;
-    ComponentMapper<ColliderComponent> cm;
+    ComponentMapper<Collider> cm;
 
-    ColliderComponent portalCollider = new ColliderComponent(16f, 16f);
+    Collider portalCollider = new Collider(16f, 16f);
 
     public PortalSystem() {
         super(Aspect.getAspectForAll(PortalComponent.class, PositionComponent.class));
@@ -32,7 +32,7 @@ public class PortalSystem extends EntityProcessingSystem {
 
         Entity player = tagManager.getEntity("player");
         PositionComponent playerPosition = pm.get(player);
-        ColliderComponent playerCollider = cm.get(player);
+        Collider playerCollider = cm.get(player);
 
         PositionComponent portalPosition = pm.get(e);
 
