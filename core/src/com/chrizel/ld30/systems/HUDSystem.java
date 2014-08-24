@@ -49,7 +49,7 @@ public class HUDSystem extends VoidEntitySystem {
 
         batch.begin();
 
-        batch.draw(darkPixel, 0, 480f - 32f, 128f, 32f);
+        //batch.draw(darkPixel, 0, 480f - 32f, 128f, 32f);
         font.draw(batch, "Health: " + health, 5f, 480f - 4f);
 
         if (health <= 0) {
@@ -58,6 +58,7 @@ public class HUDSystem extends VoidEntitySystem {
             font.setScale(2.0f);
             font.draw(batch, gameOver, 320f - font.getBounds(gameOver).width / 2, 260f);
             font.setScale(1.0f);
+            mapSystem.gameOver = true;
         } else if (mapSystem.win) {
             String gameOver = "The End";
             batch.draw(darkPixel, 0, 0, 640f, 480f);

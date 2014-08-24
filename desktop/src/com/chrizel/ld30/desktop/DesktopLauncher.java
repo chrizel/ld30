@@ -7,6 +7,7 @@ import com.chrizel.ld30.Game;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.title = "Spike Quest";
 		new LwjglApplication(new Game(), config);
 	}
 }

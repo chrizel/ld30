@@ -40,6 +40,7 @@ public class MapSystem extends VoidEntitySystem {
     public float globalTintTime = .5f;
 
     public boolean win = false;
+    public boolean gameOver = false;
 
     public MapSystem(OrthographicCamera camera, String tilesTexture, String mapName1, String mapName2) {
         super();
@@ -230,7 +231,6 @@ public class MapSystem extends VoidEntitySystem {
 
     public void win() {
         win = true;
-        System.out.println("you won!");
         world.getManager(TagManager.class).getEntity("player").getComponent(PlayerComponent.class).enabled = false;
     }
 
